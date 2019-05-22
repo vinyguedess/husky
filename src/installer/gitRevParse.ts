@@ -7,7 +7,7 @@ export default function(): {
   try {
     const { stdout } = execa.sync('git', [
       'rev-parse',
-      '--show-top-level',
+      '--show-toplevel',
       '--git-common-dir'
     ])
 

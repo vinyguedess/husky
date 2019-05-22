@@ -138,7 +138,7 @@ export function install(
   // Resolve git directory (e.g. .git/ or .git/modules/path/to/submodule)
   // const resolvedGitDir = resolveGitDir(userPkgDir)
 
-  const { gitDir: resolvedGitDir, topLevel: rootDir } = gitRevParse()
+  const { gitDir, topLevel } = gitRevParse()
 
   // Checks
   if (process.env.HUSKY_SKIP_INSTALL === 'true') {
@@ -158,7 +158,7 @@ export function install(
   //   return
   // }
 
-  if (resolvedGitDir === null) {
+  if (gitDir === null) {
     console.log(
       "Can't find resolved .git directory, skipping Git hooks installation."
     )
@@ -178,16 +178,16 @@ export function install(
   }
 
   // Create hooks directory if it doesn't exist
-  if (!fs.existsSync(path.join(resolvedGitDir, 'hooks'))) {
-    fs.mkdirSync(path.join(resolvedGitDir, 'hooks'))
+  if (!fs.existsSync(path.join(gitDir, 'hooks'))) {
+    fs.mkdirSync(path.join(gitDir, 'hooks'))
   }
 
   // Create hooks
   // Get root dir based on the first .git directory of file found
   // const rootDir = path.dirname(gitDirOrFile)
 
-  const hooks = getHooks(resolvedGitDir)
-  const script = getScript(rootDir, huskyDir, requireRunNodePath)
+  const hooks = getHooks(gitDir)
+  const script = getScript(topLevel, huskyDir, requireRunNodePath)
   createHooks(hooks, script)
 
   console.log(`husky > Done`)
@@ -203,9 +203,9 @@ export function uninstall(huskyDir: string): void {
   // Const userPkgDir = pkgDir.sync(path.join(huskyDir, '..'))
   // Const resolvedGitDir = resolveGitDir(userPkgDir)
 
-  const { gitDir: resolvedGitDir} = gitRevParse()
+  const { gitDir } = gitRevParse()
 
-  if (resolvedGitDir === null) {
+  if (gitDir === null) {
     console.log(
       "Can't find resolved .git directory, skipping Git hooks uninstallation."
     )
@@ -220,7 +220,7 @@ export function uninstall(huskyDir: string): void {
   }
 
   // Remove hooks
-  const hooks = getHooks(resolvedGitDir)
+  const hooks = getHooks(gitDir)
   removeHooks(hooks)
 
   console.log('husky > Done')
